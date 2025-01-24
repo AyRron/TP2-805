@@ -1,0 +1,7 @@
+12 + 5;          
+10 / 2 - 3;  99;
+((30 * 1) + 4) mod 2;
+3 * -4;
+let prixHt = 200;
+let prixTtc =  prixHt * 119 / 100;
+prixTtc + 100.
