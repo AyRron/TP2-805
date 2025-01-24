@@ -1,5 +1,4 @@
 # TP2-805
 
-## Feltrin Mathis
-
-## Pitar Cyril
+- Feltrin Mathis
+- Pitar Cyril
