@@ -14,8 +14,9 @@ public class Main {
 	    yy = new LexicalAnalyzer(new InputStreamReader(System.in)) ;
 	@SuppressWarnings("deprecation")
 	parser p = new parser (yy);
-	Symbol s = p.parse( );
-	System.out.println(s.value);
+	Symbol s = p.parse();
+	Noeud arbre = (Noeud) s.value;
+	arbre.afficher();
     }
 
 }

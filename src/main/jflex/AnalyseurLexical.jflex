@@ -63,6 +63,8 @@ comment     = {comment1}|{comment2}
 "="         { return new Symbol(sym.EGAL, yyline, yycolumn) ;}
 ">"         { return new Symbol(sym.GT, yyline, yycolumn) ;}
 ">="        { return new Symbol(sym.GTE, yyline, yycolumn) ;}
+"<"         { return new Symbol(sym.LT, yyline, yycolumn) ;}
+"<="        { return new Symbol(sym.LTE, yyline, yycolumn) ;}
 "("         { return new Symbol(sym.PAR_G, yyline, yycolumn) ;}
 ")"         { return new Symbol(sym.PAR_D, yyline, yycolumn) ;}
 "+"         { return new Symbol(sym.PLUS, yyline, yycolumn) ;}
