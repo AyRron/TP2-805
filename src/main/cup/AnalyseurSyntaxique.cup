@@ -35,19 +35,18 @@ parser code {:
 :};
 
 /* symboles terminaux */
-terminal PLUS, MOINS, MOINS_UNAIRE, MUL, DIV, MOD, NOT, OR, AND, PAR_G, PAR_D, SEMI, POINT, LET, INPUT, OUTPUT, IF, THEN, ELSE, WHILE, DO, EGAL, GT, GTE, LT, LTE, NIL, ERROR;
-terminal Integer ENTIER;
-terminal String IDENT;
+terminal PLUS, MOINS, MOINS_UNAIRE, MUL, DIV, MOD, NOT, OR, AND, PAR_G, PAR_D, SEMI, POINT, LET, INPUT, OUTPUT, IF, THEN, ELSE, WHILE, DO, EGAL, GT, GTE, LT, LTE, NIL, IDENT, ENTIER, ERROR;
 
 /* non terminaux */
-non terminal Noeud program, sequence, expression, expr;
+non terminal program, sequence, expression, expr;
 
 precedence nonassoc OUTPUT;
 precedence right OR;
 precedence right AND;
 precedence right NOT;
 precedence nonassoc EGAL;
-precedence nonassoc GT, GTE, LT, LTE;
+precedence nonassoc GT, GTE;
+precedence nonassoc LT, LTE;
 precedence left PLUS, MOINS;
 precedence left MUL, DIV, MOD;
 precedence left MOINS_UNAIRE;
@@ -55,41 +54,42 @@ precedence left MOINS_UNAIRE;
 /* grammaire */
 // un pg est une sequence d'insctions terminee par point
 program ::= 
-    sequence:s POINT            {: RESULT = s; :} 
+    sequence:s POINT            {: RESULT = (Noeud)s; :} 
     ;
 
 // une sequence est une suite d'instructions separes par des point virgules 
-sequence ::= expression:e1 SEMI sequence:e2     {: RESULT = new Noeud(";", (Noeud)e1, (Noeud)e2); :}
+sequence ::= expression:e1 SEMI sequence:e2     {: RESULT = new Noeud(";", "SEMI", (Noeud)e1, (Noeud)e2); :}
             | expression:e                      {: RESULT = (Noeud)e; :}
+            |                                   {: RESULT = new Noeud(";", "SEMI"); :}
             ;
 
 // une expession est soit une affectation ,une              
 expression ::= expr:e                                               {: RESULT = (Noeud)e; :}
-             | LET IDENT:nom EGAL expr:e                            {: RESULT = new Noeud("let", new Noeud((String)nom), (Noeud)e); :}             
-             | WHILE expr:cond DO expression:e                      {: RESULT = new Noeud("while", (Noeud)cond, (Noeud)e); :}
-             | IF expr:cond THEN expression:a1 ELSE expression:a2   {: RESULT = new Noeud("if", (Noeud)cond, new Noeud("THEN", (Noeud)a1, (Noeud)a2)); :}
+             | LET IDENT:nom EGAL expr:e                            {: RESULT = new Noeud("let", "LET", new Noeud((String)nom, "IDENT"), (Noeud)e); :}             
+             | WHILE expr:cond DO expression:e                      {: RESULT = new Noeud("while", "WHILE", (Noeud)cond, (Noeud)e); :}
+             | IF expr:cond THEN expression:a1 ELSE expression:a2   {: RESULT = new Noeud("if", "IF", (Noeud)cond, new Noeud(" ", "ELSE", (Noeud)a1, (Noeud)a2)); :}
              | error // reprise d'erreurs
              ;
 
 // expression arithmetiques et logiques 
-expr ::= NOT:op expr:e                          {: RESULT = new Noeud("!", (Noeud)e); :}
-       | expr:e1 AND expr:e2                    {: RESULT = new Noeud("&&", (Noeud)e1, (Noeud)e2); :}
-       | expr:e1 OR expr:e2                     {: RESULT = new Noeud("||", (Noeud)e1, (Noeud)e2); :}
-       | expr:e1 EGAL expr:e2                   {: RESULT = new Noeud("=", (Noeud)e1, (Noeud)e2); :}
-       | expr:e1 GT expr:e2                     {: RESULT = new Noeud(">", (Noeud)e1, (Noeud)e2); :}
-       | expr:e1 GTE expr:e2                    {: RESULT = new Noeud(">=", (Noeud)e1, (Noeud)e2); :}
-       | expr:e1 LT expr:e2                     {: RESULT = new Noeud("<", (Noeud)e1, (Noeud)e2); :}
-       | expr:e1 LTE expr:e2                    {: RESULT = new Noeud("<=", (Noeud)e1, (Noeud)e2); :}
-       | expr:e1 PLUS expr:e2                   {: RESULT = new Noeud("+", (Noeud)e1, (Noeud)e2); :}
-       | expr:e1 MOINS expr:e2                  {: RESULT = new Noeud("-", (Noeud)e1, (Noeud)e2); :}
-       | expr:e1 MUL expr:e2                    {: RESULT = new Noeud("*", (Noeud)e1, (Noeud)e2); :}
-       | expr:e1 DIV expr:e2                    {: RESULT = new Noeud("/", (Noeud)e1, (Noeud)e2); :}
-       | expr:e1 MOD expr:e2                    {: RESULT = new Noeud("%", (Noeud)e1, (Noeud)e2); :}
-       | MOINS expr:e                           {: RESULT = new Noeud("-", (Noeud)e); :}
-       | OUTPUT expr:e                          {: RESULT = new Noeud("output", (Noeud)e); :}
-       | INPUT                                  {: RESULT = new Noeud("input"); :}
-       | NIL                                    {: RESULT = new Noeud("nil"); :}
-       | ENTIER:n                               {: RESULT = new Noeud(n.toString()); :}
-       | IDENT:id                               {: RESULT = new Noeud((String)id); :}
+expr ::= NOT:op expr:e                          {: RESULT = new Noeud("!", "NOT", (Noeud)e); :}
+       | expr:e1 AND expr:e2                    {: RESULT = new Noeud("&&", "AND", (Noeud)e1, (Noeud)e2); :}
+       | expr:e1 OR expr:e2                     {: RESULT = new Noeud("||", "OR", (Noeud)e1, (Noeud)e2); :}
+       | expr:e1 EGAL expr:e2                   {: RESULT = new Noeud("=", "EGAL", (Noeud)e1, (Noeud)e2); :}
+       | expr:e1 GT expr:e2                     {: RESULT = new Noeud(">", "GT", (Noeud)e1, (Noeud)e2); :}
+       | expr:e1 GTE expr:e2                    {: RESULT = new Noeud(">=", "GTE", (Noeud)e1, (Noeud)e2); :}
+       | expr:e1 LT expr:e2                     {: RESULT = new Noeud("<", "LT", (Noeud)e1, (Noeud)e2); :}
+       | expr:e1 LTE expr:e2                    {: RESULT = new Noeud("<=", "LTE", (Noeud)e1, (Noeud)e2); :}
+       | expr:e1 PLUS expr:e2                   {: RESULT = new Noeud("+", "PLUS", (Noeud)e1, (Noeud)e2); :}
+       | expr:e1 MOINS expr:e2                  {: RESULT = new Noeud("-", "MOINS", (Noeud)e1, (Noeud)e2); :}
+       | expr:e1 MUL expr:e2                    {: RESULT = new Noeud("*", "MUL", (Noeud)e1, (Noeud)e2); :}
+       | expr:e1 DIV expr:e2                    {: RESULT = new Noeud("/", "DIV", (Noeud)e1, (Noeud)e2); :}
+       | expr:e1 MOD expr:e2                    {: RESULT = new Noeud("%", "MOD", (Noeud)e1, (Noeud)e2); :}
+       | MOINS expr:e                           {: RESULT = new Noeud("-", "MOINS", (Noeud)e); :}
+       | OUTPUT expr:e                          {: RESULT = new Noeud("output", "OUTPUT", (Noeud)e); :}
+       | INPUT                                  {: RESULT = new Noeud("input", "INPUT"); :}
+       | NIL                                    {: RESULT = new Noeud("nil", "NIL"); :}
+       | ENTIER:n                               {: RESULT = new Noeud(n.toString(), "ENTIER"); :}
+       | IDENT:id                               {: RESULT = new Noeud((String)id, "IDENT"); :}
        | PAR_G sequence:e PAR_D                 {: RESULT = (Noeud)e ; :}
        ;

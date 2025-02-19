@@ -16,7 +16,12 @@ public class Main {
         parser p = new parser (yy);
         Symbol s = p.parse();
         Noeud arbre = (Noeud) s.value;
-		arbre.afficher();
+        arbre.afficherArbre();
+        // SyntaxTree a = (SyntaxTree) s.value;
+        // System.out.println("; expression prefixee parenthesee : " + a.toString());
+        // System.out.print(a.compile());
+        System.out.println("; expression prefixee parenthesee : " + arbre.toString());
+        System.out.print(arbre.compile());
     }
 
 }
